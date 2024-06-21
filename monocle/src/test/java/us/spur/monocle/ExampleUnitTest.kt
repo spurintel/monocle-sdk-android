@@ -1,4 +1,4 @@
-package us.spur.monocle_example
+package us.spur.monocle
 
 import org.junit.Test
 
