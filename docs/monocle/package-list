@@ -1,0 +1,25 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:us.spur.monocle////PointingToDeclaration/monocle/us.spur.monocle/index.md
+$dokka.location:us.spur.monocle/BundleResponse///PointingToDeclaration/monocle/us.spur.monocle/-bundle-response/index.md
+$dokka.location:us.spur.monocle/BundleResponse/BundleResponse/#/PointingToDeclaration/monocle/us.spur.monocle/-bundle-response/-bundle-response.md
+$dokka.location:us.spur.monocle/IpEchoClient///PointingToDeclaration/monocle/us.spur.monocle/-ip-echo-client/index.md
+$dokka.location:us.spur.monocle/IpEchoClient/ipEchoService/#/PointingToDeclaration/monocle/us.spur.monocle/-ip-echo-client/ip-echo-service.md
+$dokka.location:us.spur.monocle/IpEchoService///PointingToDeclaration/monocle/us.spur.monocle/-ip-echo-service/index.md
+$dokka.location:us.spur.monocle/IpEchoService/ip/#/PointingToDeclaration/monocle/us.spur.monocle/-ip-echo-service/ip.md
+$dokka.location:us.spur.monocle/MonocleClient///PointingToDeclaration/monocle/us.spur.monocle/-monocle-client/index.md
+$dokka.location:us.spur.monocle/MonocleClient/apiService/#/PointingToDeclaration/monocle/us.spur.monocle/-monocle-client/api-service.md
+$dokka.location:us.spur.monocle/MonoclePlugins///PointingToDeclaration/monocle/us.spur.monocle/-monocle-plugins/index.md
+$dokka.location:us.spur.monocle/MonoclePlugins/MonoclePlugins/#kotlin.String/PointingToDeclaration/monocle/us.spur.monocle/-monocle-plugins/-monocle-plugins.md
+$dokka.location:us.spur.monocle/MonoclePlugins/id/#/PointingToDeclaration/monocle/us.spur.monocle/-monocle-plugins/id.md
+$dokka.location:us.spur.monocle/MonocleService///PointingToDeclaration/monocle/us.spur.monocle/-monocle-service/index.md
+$dokka.location:us.spur.monocle/MonocleService/getBundle/#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#us.spur.monocle.MonoclePlugins?/PointingToDeclaration/monocle/us.spur.monocle/-monocle-service/get-bundle.md
+$dokka.location:us.spur.monocle/PlatformEval///PointingToDeclaration/monocle/us.spur.monocle/-platform-eval/index.md
+$dokka.location:us.spur.monocle/PlatformEval/PlatformEval/#/PointingToDeclaration/monocle/us.spur.monocle/-platform-eval/-platform-eval.md
+$dokka.location:us.spur.monocle/PlatformEval/getIFs/#android.content.Context/PointingToDeclaration/monocle/us.spur.monocle/-platform-eval/get-i-fs.md
+$dokka.location:us.spur.monocle/PlatformEval/getPlatformEval/#android.content.Context/PointingToDeclaration/monocle/us.spur.monocle/-platform-eval/get-platform-eval.md
+$dokka.location:us.spur.monocle/PlatformEval/isVPNConnected/#android.content.Context/PointingToDeclaration/monocle/us.spur.monocle/-platform-eval/is-v-p-n-connected.md
+$dokka.location:us.spur.monocle/QueryResponse///PointingToDeclaration/monocle/us.spur.monocle/-query-response/index.md
+$dokka.location:us.spur.monocle/QueryResponse/QueryResponse/#/PointingToDeclaration/monocle/us.spur.monocle/-query-response/-query-response.md
+us.spur.monocle
+

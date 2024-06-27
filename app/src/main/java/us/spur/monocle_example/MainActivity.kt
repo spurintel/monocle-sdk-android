@@ -25,6 +25,18 @@ import us.spur.monocle.MonoclePlugins
 import us.spur.monocle.MonocleService
 import us.spur.monocle.PlatformEval
 
+/**
+ * Example app utilizing the Spur Monocle SDK.
+ *
+ * This is an example app that demonstrates how to use the
+ * Monocle SDK to load Monocle, perform analysis on whether the device
+ * is using a VPN/Proxy and and fetch the results in an encrypted bundle.
+ *
+ * @author      spur.us
+ * @see         https://github.com/spur/monocle-sdk-android
+ * @see         https://docs.spur.us/#/monocle?id=monocle
+ * @version     %I%, %G%
+ */
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

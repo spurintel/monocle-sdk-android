@@ -2,6 +2,10 @@ package us.spur.monocle
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * Monocle API Client definition for Android
+ *
+ */
 object MonocleClient {
     private const val BASE_URL = "https://mcl.spur.dev"
     private const val VERSION = "0.0.20"
