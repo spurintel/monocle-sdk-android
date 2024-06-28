@@ -1,6 +1,8 @@
 # monocle-sdk-android
 Monocle SDK for Android
 
+[SDK interface docs](https://spurintel.github.io/monocle-sdk-android/)
+
 ## Automatic dependency resolution
 
 The Monocle SDK is not hosted in Maven Central yet, but that is the intent and priority.
@@ -51,7 +53,7 @@ By following these steps, you should be able to successfully include the Monocle
 
 ## JavaDocs (KDocs)
 
-API Docs can be generated from the command line using the [Dokka](https://github.com/Kotlin/dokka) Gradle plugin and will be written to the `docs` directory.  
+API Docs can be generated from the command line using the Dokka Gradle plugin and will be written to the `docs` directory.  
 
 * ./gradlew [dokkaGfm|dokkaJavadoc|dokkaHtml]
 
