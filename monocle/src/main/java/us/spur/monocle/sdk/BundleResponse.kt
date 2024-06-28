@@ -1,4 +1,4 @@
-package us.spur.monocle
+package us.spur.monocle.sdk
 
 class BundleResponse {
     private val data: String? = null

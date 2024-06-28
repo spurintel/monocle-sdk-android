@@ -1,4 +1,4 @@
-package us.spur.monocle_example.ui.theme
+package us.spur.monocle.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

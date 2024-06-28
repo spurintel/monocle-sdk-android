@@ -1,4 +1,4 @@
-package us.spur.monocle_example
+package us.spur.monocle.example
 
 import android.os.Bundle
 import android.util.Log
@@ -18,12 +18,12 @@ import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import us.spur.monocle_example.ui.theme.DemoAppTheme
-import us.spur.monocle.BundleResponse
-import us.spur.monocle.MonocleClient
-import us.spur.monocle.MonoclePlugins
-import us.spur.monocle.MonocleService
-import us.spur.monocle.PlatformEval
+import us.spur.monocle.example.ui.theme.DemoAppTheme
+import us.spur.monocle.sdk.BundleResponse
+import us.spur.monocle.sdk.MonocleClient
+import us.spur.monocle.sdk.MonoclePlugins
+import us.spur.monocle.sdk.MonocleService
+import us.spur.monocle.sdk.PlatformEval
 
 /**
  * Example app utilizing the Spur Monocle SDK.

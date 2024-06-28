@@ -1,4 +1,4 @@
-package us.spur.monocle
+package us.spur.monocle.sdk
 
 import retrofit2.Call
 import retrofit2.http.GET

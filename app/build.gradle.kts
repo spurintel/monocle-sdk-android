@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "us.spur.monocle_example"
+    namespace = "us.spur.monocle.example"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "us.spur.monocle_example"
+        applicationId = "us.spur.monocle.example"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -66,3 +66,4 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 //    implementation(project(":monocle"))
 }
+

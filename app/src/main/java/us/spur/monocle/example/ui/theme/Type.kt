@@ -1,4 +1,4 @@
-package us.spur.monocle_example.ui.theme
+package us.spur.monocle.example.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

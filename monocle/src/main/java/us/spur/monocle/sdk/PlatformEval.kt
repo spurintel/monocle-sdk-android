@@ -1,4 +1,4 @@
-package us.spur.monocle
+package us.spur.monocle.sdk
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -41,7 +41,7 @@ class PlatformEval {
         pe.put("host", Build.HOST)
         pe.put("sdk", Build.VERSION.SDK_INT)
         pe.put("isVPNConnected", isVPNConnected(context) ?: JSONObject.NULL)
-        pe.put("networkInterfaces", getIFs(context))
+        pe.put("networkInterfaces", getIFs())
 //        pe.put("serial", Build.SERIAL)
 //        pe.put("supportedAbis", Build.SUPPORTED_ABIS)
 //        pe.put("supported32BitAbis", Build.SUPPORTED_32_BIT_ABIS)
@@ -72,7 +72,7 @@ class PlatformEval {
         }
     }
 
-    fun getIFs(context: Context): JSONObject {
+    fun getIFs(): JSONObject {
         // Get the IP addresses for the active network interfaces
         val networkInterfaces = NetworkInterface.getNetworkInterfaces()
         var netIFs = JSONObject()

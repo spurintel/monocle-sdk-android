@@ -1,4 +1,4 @@
-//package us.spur.monocle
+package us.spur.monocle.sdk
 //
 //import com.google.gson.Gson
 //import okhttp3.OkHttpClient

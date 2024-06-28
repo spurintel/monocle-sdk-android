@@ -1,4 +1,4 @@
-package us.spur.monocle
+package us.spur.monocle.sdk
 
 class QueryResponse {
     private val ip: String? = null

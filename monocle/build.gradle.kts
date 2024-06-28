@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "us.spur.monocle"
+    namespace = "us.spur.monocle.sdk"
     compileSdk = 34
 
     defaultConfig {
@@ -43,4 +43,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+}
+
+tasks.dokkaHtml.configure {
+    outputDirectory.set(file("../docs"))
 }

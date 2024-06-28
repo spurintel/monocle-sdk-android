@@ -1,4 +1,4 @@
-package us.spur.monocle_example.ui.theme
+package us.spur.monocle.example.ui.theme
 
 import android.app.Activity
 import android.os.Build
