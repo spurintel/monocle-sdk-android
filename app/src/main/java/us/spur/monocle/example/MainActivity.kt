@@ -2,11 +2,15 @@ package us.spur.monocle.example
 
 import android.os.Bundle
 import android.util.Log
+import android.content.Context
+import android.provider.Settings
+import java.util.UUID
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -55,18 +59,18 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        val monoclePlugins = MonoclePlugins("somescriptid")
+        val scriptId = getUUID(this)
+        val monoclePlugins = MonoclePlugins("monocle-plugin-uuid")
         val monocleService: MonocleService = MonocleClient.apiService
 
         monocleService.getBundle(
             "CHANGEME",
             "0.0.20",
-            "983e37d2-ff2f-4e6e-9fe4-e195f76f97cc",
+            scriptId,
             "android",
             monoclePlugins)!!.enqueue(object : Callback<BundleResponse?> {
             override fun onResponse(call: Call<BundleResponse?>, response: Response<BundleResponse?>) {
                 if (response.isSuccessful()) {
-
                     Log.d("MonocleBundle", "is successful")
                     val bundleResponse: BundleResponse? = response.body()
                     val gson = GsonBuilder().setPrettyPrinting().create()
@@ -83,7 +87,7 @@ class MainActivity : ComponentActivity() {
                 Log.e("MainActivity", "Error fetching user data", t)
             }
         })
-        val eval = PlatformEval().getPlatformEval(context = this).toString(2)
+        val eval = PlatformEval().getPlatformEval(this).toString(2)
         addLogEntry("Platform evaluation:\n" + eval)
     }
 }
@@ -91,12 +95,34 @@ class MainActivity : ComponentActivity() {
 private val logEntries = mutableStateListOf<String>()
 
 fun addLogEntry(entry: String) {
-    logEntries.add(entry)
+    logEntries.add(0, entry)
 }
+
+/**
+ * Returns a UUID based on the Android ID.
+ *
+ * The Android ID is no longer device specific, but device and app specific for privacy reasons.
+ * If the Android ID is not available, a random UUID is generated.
+ * @param context The application context.
+ */
+fun getUUID(context: Context): String {
+    return try {
+        val androidId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        val uuid3 = UUID.nameUUIDFromBytes(androidId.toByteArray())
+        uuid3.toString()
+    } catch (e: Exception) {
+        UUID.randomUUID().toString()  // UUIDv4
+    }
+}
+
 @Composable
 fun ScrollingLog(logEntries: List<String>) {
+    val listState = rememberLazyListState()
+
     LazyColumn(
-        reverseLayout = false
+        reverseLayout = false,
+        state = listState,
+        modifier = Modifier.fillMaxSize()
     ) {
         // Add each log entry as a list item
         items(logEntries) { entry ->
