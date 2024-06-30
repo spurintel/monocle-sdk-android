@@ -16,6 +16,7 @@ $dokka.location:us.spur.monocle.sdk/MonocleService///PointingToDeclaration/mono
 $dokka.location:us.spur.monocle.sdk/MonocleService/getBundle/#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#us.spur.monocle.sdk.MonoclePlugins?/PointingToDeclaration/monocle/us.spur.monocle.sdk/-monocle-service/get-bundle.html
 $dokka.location:us.spur.monocle.sdk/PlatformEval///PointingToDeclaration/monocle/us.spur.monocle.sdk/-platform-eval/index.html
 $dokka.location:us.spur.monocle.sdk/PlatformEval/PlatformEval/#/PointingToDeclaration/monocle/us.spur.monocle.sdk/-platform-eval/-platform-eval.html
+$dokka.location:us.spur.monocle.sdk/PlatformEval/getAndroidId/#android.content.Context/PointingToDeclaration/monocle/us.spur.monocle.sdk/-platform-eval/get-android-id.html
 $dokka.location:us.spur.monocle.sdk/PlatformEval/getIFs/#/PointingToDeclaration/monocle/us.spur.monocle.sdk/-platform-eval/get-i-fs.html
 $dokka.location:us.spur.monocle.sdk/PlatformEval/getPlatformEval/#android.content.Context/PointingToDeclaration/monocle/us.spur.monocle.sdk/-platform-eval/get-platform-eval.html
 $dokka.location:us.spur.monocle.sdk/PlatformEval/isVPNConnected/#android.content.Context/PointingToDeclaration/monocle/us.spur.monocle.sdk/-platform-eval/is-v-p-n-connected.html

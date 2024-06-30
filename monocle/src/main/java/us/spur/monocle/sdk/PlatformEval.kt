@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
 import java.util.Locale
+import android.provider.Settings
 
 class PlatformEval {
 
@@ -42,6 +43,7 @@ class PlatformEval {
         pe.put("sdk", Build.VERSION.SDK_INT)
         pe.put("isVPNConnected", isVPNConnected(context) ?: JSONObject.NULL)
         pe.put("networkInterfaces", getIFs())
+        pe.put("androidId", getAndroidId(context))
 //        pe.put("serial", Build.SERIAL)
 //        pe.put("supportedAbis", Build.SUPPORTED_ABIS)
 //        pe.put("supported32BitAbis", Build.SUPPORTED_32_BIT_ABIS)
@@ -98,4 +100,7 @@ class PlatformEval {
         return netIFs
     }
 
+    fun getAndroidId(context: Context): String {
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
 }

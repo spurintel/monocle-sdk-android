@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  * @param BASE_URL URL to load Monocle
  * @param VERSION Monocle version
  * @param SOURCE Monocle source
- * @param ID Monocle script ID
+ * @param ID Monocle ID
  */
 object MonocleClient {
     private const val BASE_URL = "https://mcl.spur.us"
