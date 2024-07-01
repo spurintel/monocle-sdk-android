@@ -106,4 +106,16 @@ API Docs can be generated from the command line using the Dokka Gradle plugin an
 
 * ./gradlew [dokkaGfm|dokkaJavadoc|dokkaHtml]
 
-HTML docs have been pre-built and included in this repo.
+HTML docs have been pre-built and included in this repo under `docs`.
+
+## FAQ
+
+### Can't I just use the native network state APIs to determine if the device is on a VPN?
+
+   You can and possibly should use native APIs as well, but there are several situations where this information is inaccurate.  These APIs also generally require additional system permissions the user has to approve, and are increasingly restrictive in recent Android versions.  The native APIs also will not tell you which proxy/VPN service is in use or provide additional enrichment to make more subtle access decisions.  
+
+### Does Monocle support iOS?
+   Yes. See [Monocle SDK for iOS](https://github.com/spurintel/monocle-sdk-ios)
+
+### What about Flutter or ReactNative or other frameworks?
+   Monocle is lightweight and should work on any platform that can execute Javascript in the client and make standard HTTPS GETs/POSTs, but it is untested at this time.  Please let us know if you try it.
