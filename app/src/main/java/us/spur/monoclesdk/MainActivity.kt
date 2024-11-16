@@ -12,11 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import us.spur.monocle.AssessmentResult
 import us.spur.monocle.Monocle
 
 class MainActivity : AppCompatActivity() {
-
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -50,8 +48,13 @@ class MainActivity : AppCompatActivity() {
     // This method sets up us.spur.monocle.Monocle
     private fun setupMonocle() {
         val siteToken = getString(R.string.site_token)
+        // If you do not want all the plugins to run, you can specify the ones you want
+//        val config = MonocleConfig(
+//            token = "your_token",
+//            enabledPlugins = MonoclePluginOptions.DNS or MonoclePluginOptions.LOCATION,
+//        )
         val config = MonocleConfig(token = siteToken)
-        Monocle.setup(config, this, R::class.java)
+        Monocle.setup(config, this)
     }
 
     private suspend fun runMonocleAssessment() {
@@ -91,22 +94,5 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
-    }
-
-    private fun formatAssessmentResult(result: AssessmentResult): String {
-        return StringBuilder().apply {
-            append("VPN: ${result.vpn}\n")
-            append("Proxied: ${result.proxied}\n")
-            append("Anonymous: ${result.anon}\n")
-            append("RDP: ${result.rdp}\n")
-            append("DCH: ${result.dch}\n")
-            append("Country Code: ${result.cc}\n")
-            append("IP Address: ${result.ip}\n")
-            result.ipv6?.let { append("IPv6 Address: $it\n") }
-            append("Timestamp: ${result.ts}\n")
-            append("Complete: ${result.complete}\n")
-            append("ID: ${result.id}\n")
-            append("Session ID: ${result.sid}\n")
-        }.toString()
     }
 }

@@ -29,7 +29,6 @@ data class DeviceInformation(
     val currentLocale: String,
     val timeZone: String,
     val networkType: String,
-    val installedApps: List<String> = emptyList(),
 )
 
 class DeviceInfoPlugin(
@@ -72,9 +71,6 @@ class DeviceInfoPlugin(
             val brightness =
                 Settings.System.getInt(contextRef.contentResolver, Settings.System.SCREEN_BRIGHTNESS) / 255f
             val locale = Locale.getDefault().toString()
-
-            val installedApps = getInstalledApps()
-
             val fields = Build.VERSION_CODES::class.java.fields
             var codeName = "UNKNOWN"
             fields.filter { it.getInt(Build.VERSION_CODES::class) == Build.VERSION.SDK_INT }
@@ -93,7 +89,6 @@ class DeviceInfoPlugin(
                 currentLocale = locale,
                 timeZone = TimeZone.getDefault().id,
                 networkType = networkType,
-                installedApps = installedApps,
             )
         }
     }
@@ -117,23 +112,6 @@ class DeviceInfoPlugin(
                 capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Cellular"
                 else -> "Unknown"
             }
-        }
-    }
-
-    private fun getInstalledApps(): List<String> {
-        return try {
-            val packageManager = contextRef.packageManager
-            val apps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            apps.map { it.packageName }
-                .filter { packageName ->
-                    !(packageName.startsWith("com.google") || packageName.startsWith("kotlin") || packageName.startsWith(
-                        "us.spur"
-                    ) || packageName.startsWith("android") || packageName.startsWith("com.android") || packageName.startsWith(
-                        "javax"
-                    ) || packageName.startsWith(contextRef.packageName))
-                }
-        } catch (e: SecurityException) {
-            emptyList()
         }
     }
 }

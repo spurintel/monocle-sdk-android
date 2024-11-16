@@ -19,12 +19,11 @@ import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
 
-class Monocle private constructor(context: Context, rClass: Class<*>? = null) {
+class Monocle private constructor(context: Context) {
 
     private val contextRef = WeakReference(context)
     private val v = "0.0.1"
     private val t = "android"
-    private val rClass = rClass
 
     companion object {
         @Volatile
@@ -32,9 +31,9 @@ class Monocle private constructor(context: Context, rClass: Class<*>? = null) {
 
         private lateinit var config: MonocleConfig
 
-        fun setup(config: MonocleConfig, context: Context, rClass: Class<*>? = null) {
+        fun setup(config: MonocleConfig, context: Context) {
             Companion.config = config
-            instance = Monocle(context, rClass)
+            instance = Monocle(context)
         }
 
         fun getInstance(): Monocle {
@@ -75,7 +74,8 @@ class Monocle private constructor(context: Context, rClass: Class<*>? = null) {
 
     suspend fun assess(): Result<AssessmentResponse> {
         val context = contextRef.get() ?: return Result.failure(IllegalStateException("Context is no longer available"))
-
+        val pluginsList = mutableListOf<MonoclePlugin>()
+        val pluginsResponses = mutableListOf<MonoclePluginResponse>()
         return coroutineScope {
             try {
                 // Concurrently gather data from all plugins
@@ -86,32 +86,34 @@ class Monocle private constructor(context: Context, rClass: Class<*>? = null) {
                     LocationPlugin(context, v, t, deviceID, config.token, MonoclePluginConfig("p/li", 1))
                 val dnsPlugin =
                     DnsResolverPlugin(OkHttpClient(), v, t, deviceID, config.token, MonoclePluginConfig("p/dr", 1))
-                val appInfoPlugin = AppInfoPlugin(context, v, t, deviceID, config.token, MonoclePluginConfig("p/ai", 1), rClass)
 
-                // Await plugin results
-                val deviceInfo = async { deviceInfoPlugin.trigger() }.await()
-                val location = async { locationPlugin.trigger() }.await()
-                val dnsResult = async { dnsPlugin.trigger() }.await()
-                val appInfo = async { appInfoPlugin.trigger() }.await()
+                if (config.enabledPlugins and MonoclePluginOptions.DNS != 0) {
+                    pluginsList.add(dnsPlugin)
+                }
+                if (config.enabledPlugins and MonoclePluginOptions.DEVICE_INFO != 0) {
+                    pluginsList.add(deviceInfoPlugin)
+                }
+                if (config.enabledPlugins and MonoclePluginOptions.LOCATION != 0) {
+                    pluginsList.add(locationPlugin)
+                }
 
-                Log.d("Monocle", "location: $location")
-                Log.d("Monocle", "deviceInfo: $deviceInfo")
-                Log.d("Monocle", "dnsResult: $dnsResult")
-                Log.d("Monocle", "appInfo: $appInfo")
+                for (plugin in pluginsList) {
+                    val response = async { plugin.trigger() }.await()
+                    pluginsResponses.add(response)
+                    Log.d("Monocle", "response: $response")
+                }
 
-                // Add plugin results to a list
-                val pluginResults = listOf(deviceInfo, location, dnsResult, appInfo)
 
                 // Create BundlePostData with the plugin results
-                val bundlePostData = BundlePostData(h = pluginResults)
+                val bundlePostData = BundlePostData(h = pluginsResponses)
 
                 // Serialize BundlePostData to JSON string
                 val jsonString = Json.encodeToString(bundlePostData)
 
                 // Post the JSON string to the backend
                 val bundleResponse = BundlePoster(
-                    v = "0.0.1",
-                    t = "android",
+                    v = v,
+                    t = t,
                     s = deviceID,
                     tk = config.token
                 ).postBundle(jsonString)
@@ -135,6 +137,15 @@ class Monocle private constructor(context: Context, rClass: Class<*>? = null) {
     }
 }
 
+object MonoclePluginOptions {
+    const val DNS = 1 shl 0       // 1
+    const val DEVICE_INFO = 1 shl 1  // 2
+    const val LOCATION = 1 shl 2     // 4
+    const val ALL = DNS or DEVICE_INFO or LOCATION  // 7
+}
+
 data class MonocleConfig(
-    val token: String
+    val token: String,
+    val enabledPlugins: Int = MonoclePluginOptions.ALL,
+    val decryptionToken: String? = null
 )

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Monocle SDK Test</string>
+    <string name="site_token">CHANGEME</string>
 </resources>
