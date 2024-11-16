@@ -19,6 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Monocle"
+rootProject.name = "MonocleSDK"
 include(":app")
+include(":mylibrary")
 include(":monocle")
