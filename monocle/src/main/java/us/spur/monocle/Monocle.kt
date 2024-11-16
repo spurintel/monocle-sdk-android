@@ -11,13 +11,22 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
+
+object MonoclePluginOptions {
+    const val DNS = 1 shl 0       // 1
+    const val DEVICE_INFO = 1 shl 1  // 2
+    const val LOCATION = 1 shl 2     // 4
+    const val ALL = DNS or DEVICE_INFO or LOCATION  // 7
+}
+
+data class MonocleConfig(
+    val token: String,
+    val enabledPlugins: Int = MonoclePluginOptions.ALL,
+    val decryptionToken: String? = null
+)
 
 class Monocle private constructor(context: Context) {
 
@@ -42,7 +51,7 @@ class Monocle private constructor(context: Context) {
     }
 
     // Asynchronous device identifier function, accessible throughout Monocle
-    suspend fun getDeviceIdentifier(): String {
+    private suspend fun getDeviceIdentifier(): String {
         val context = contextRef.get() ?: throw IllegalStateException("Context is no longer available")
         return withContext(Dispatchers.IO) {
             // Try to get a hardware identifier (ANDROID_ID)
@@ -136,16 +145,3 @@ class Monocle private constructor(context: Context) {
         }
     }
 }
-
-object MonoclePluginOptions {
-    const val DNS = 1 shl 0       // 1
-    const val DEVICE_INFO = 1 shl 1  // 2
-    const val LOCATION = 1 shl 2     // 4
-    const val ALL = DNS or DEVICE_INFO or LOCATION  // 7
-}
-
-data class MonocleConfig(
-    val token: String,
-    val enabledPlugins: Int = MonoclePluginOptions.ALL,
-    val decryptionToken: String? = null
-)
