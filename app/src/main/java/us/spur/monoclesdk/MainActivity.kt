@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import us.spur.monocle.Monocle
+import us.spur.monocle.MonoclePluginOptions
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         val siteToken = getString(R.string.site_token)
         // If you do not want all the plugins to run, you can specify the ones you want
 //        val config = MonocleConfig(
-//            token = "your_token",
+//            token = siteToken,
 //            enabledPlugins = MonoclePluginOptions.DNS or MonoclePluginOptions.LOCATION,
 //        )
         val config = MonocleConfig(token = siteToken)
