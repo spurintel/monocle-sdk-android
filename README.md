@@ -70,6 +70,20 @@ dependencies {
     implementation(files("libs/monocle.aar")) // Replace 'monocle.aar' with the actual file name
 }
 ```
+
+Add the SDK dependencies:
+```gradle
+dependencies {
+    // ... other dependencies
+
+    implementation (libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.play.services.location)
+    implementation(libs.okhttp)
+}
+```
+
 4. Sync Project:
    After making these changes, click "Sync Now" in the bar that appears at the top of Android Studio to synchronize your project with the updated Gradle files.
 
