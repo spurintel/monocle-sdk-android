@@ -1,7 +1,4 @@
 # monocle-sdk-android
-Monocle SDK for Android
-
-[SDK interface docs](https://spurintel.github.io/monocle-sdk-android/)
 
 ## Prerequisites
 * AndroidStudio or other with Gradle and Kotlin support - Tested up to Android Studio Koala | 2024.1.1
