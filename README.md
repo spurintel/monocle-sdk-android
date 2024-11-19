@@ -8,7 +8,7 @@
 
 ## Implementation
 1. In the target Android project, add a package dependency for Monocle.  See dependency resolution options below.
-2. import the `Monocle` package in a Swift source file
+2. import the `Monocle` package in a Kotlin source file
 ```kotlin
 import us.spur.monocle.Monocle
 import us.spur.monocle.MonocleConfig
