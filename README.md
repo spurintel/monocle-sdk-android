@@ -38,6 +38,13 @@ At this time you would need to copy the entire Monocle source module, or check o
 
 ### Manual dependency inclusion
 
+#### Getting the AAR from GitHub
+
+To get the Monocle .aar file from GitHub, follow these steps:
+1. Go to the [Releases page](https://github.com/spurintel/monocle-sdk-android/releases) of the repository.
+2. Download the latest `monocle.aar` file from the assets section of the latest release.
+
+#### Including the AAR in Your Project
 To include the Monocle .aar file as a dependency in your Android project, you can follow these steps:
 1. Create a libs Directory:
    If you don't have one already, create a directory named libs at the root level of your project.
@@ -80,7 +87,7 @@ If the Monocle library has any transitive dependencies (dependencies of its own)
 By following these steps, you should be able to successfully include the Monocle .aar file as a dependency in your Android project and utilize its functionality
 
 ## Example app
-This example includes collecting host telemetry and geolocation in addition to the Monocle assessment, and provides better UI elements and error handling.
+
 * [Monocle Android Example App](https://github.com/spurintel/monocle-example-android)
 
 ## FAQ
