@@ -13,37 +13,20 @@ Monocle SDK for Android
 1. In the target Android project, add a package dependency for Monocle.  See dependency resolution options below.
 2. import the `Monocle` package in a Swift source file
 ```kotlin
-import us.spur.monocle.sdk.BundleResponse
-import us.spur.monocle.sdk.MonocleClient
-import us.spur.monocle.sdk.MonoclePlugins
-import us.spur.monocle.sdk.MonocleService
-import us.spur.monocle.sdk.PlatformEval
+import us.spur.monocle.Monocle
+import us.spur.monocle.MonocleConfig
 ```
 3. Get a Monocle **site-token** from the [Monocle management interface](https://app.spur.us/monocle)
 4. Enter your site token as the `token` parameter in place of `CHANGEME` in the app source.
-5. Instantiate Monocle `val monocleService: MonocleService = MonocleClient.apiService`
-6. Call `monocleService.getBundle()` to load and run the assessment.
+5. Instantiate Monocle 
 ```kotlin
-        monocleService.getBundle(
-            "CHANGEME",
-            "0.0.20",
-            "983e37d2-ff2f-4e6e-9fe4-e195f76f97cc",
-            "android",
-            monoclePlugins)!!.enqueue(object : Callback<BundleResponse?> {
-            override fun onResponse(call: Call<BundleResponse?>, response: Response<BundleResponse?>) {
-                if (response.isSuccessful()) {
-
-                    Log.d("MonocleBundle", "is successful")
-                    val bundleResponse: BundleResponse? = response.body()
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    val jsonString = gson.toJson(bundleResponse)
-                    addLogEntry("Monocle bundle received:\n" + jsonString)
-                    Log.d("MonocleBundle", jsonString)
-                } else {
-                    addLogEntry("Monocle bundle not received")
-                    Log.d("MonocleBundle", "not successful")
-                }
-            }
+val config = MonocleConfig(token = siteToken)
+Monocle.setup(config, this)
+```
+6. Call `assess` to run the assessment.
+```kotlin
+val monocle = Monocle.getInstance()
+val assessmentResult = monocle.assess()
 ```
 7. Pass the resulting assessment to your [backend integration](https://docs.spur.us/monocle?id=backend-integration).
 
@@ -99,14 +82,6 @@ By following these steps, you should be able to successfully include the Monocle
 ## Example app
 This example includes collecting host telemetry and geolocation in addition to the Monocle assessment, and provides better UI elements and error handling.
 * [Monocle Android Example App](https://github.com/spurintel/monocle-example-android)
-
-## JavaDocs (KDocs)
-
-API Docs can be generated from the command line using the Dokka Gradle plugin and will be written to the `docs` directory.
-
-* ./gradlew [dokkaGfm|dokkaJavadoc|dokkaHtml]
-
-HTML docs have been pre-built and included in this repo under `docs`.
 
 ## FAQ
 

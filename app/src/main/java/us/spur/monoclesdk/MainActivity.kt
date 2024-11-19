@@ -1,6 +1,5 @@
 package us.spur.monoclesdk
 
-import us.spur.monocle.MonocleConfig
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -13,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import us.spur.monocle.Monocle
-import us.spur.monocle.MonoclePluginOptions
+import us.spur.monocle.MonocleConfig
 
 class MainActivity : AppCompatActivity() {
 
