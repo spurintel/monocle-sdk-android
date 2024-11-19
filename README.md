@@ -14,7 +14,7 @@ import us.spur.monocle.Monocle
 import us.spur.monocle.MonocleConfig
 ```
 3. Get a Monocle **site-token** from the [Monocle management interface](https://app.spur.us/monocle)
-4. Enter your site token as the `token` parameter in place of `CHANGEME` in the app source.
+4. Enter your site token as the `token` parameter
 5. Instantiate Monocle 
 ```kotlin
 val config = MonocleConfig(token = siteToken)
