@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew :monocle:assembleRelease
 
       - name: Upload AAR as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: monocle-aar
           path: monocle/build/outputs/aar/*.aar
@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Download AAR artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: monocle-aar
           path: ./monocle-aar
