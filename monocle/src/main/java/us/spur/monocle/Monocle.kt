@@ -24,6 +24,7 @@ object MonoclePluginOptions {
 
 data class MonocleConfig(
     val token: String,
+    val cpd: String? = null, // Customer provided data
     val enabledPlugins: Int = MonoclePluginOptions.ALL,
     val decryptionToken: String? = null
 )
@@ -124,7 +125,8 @@ class Monocle private constructor(context: Context) {
                     v = v,
                     t = t,
                     s = deviceID,
-                    tk = config.token
+                    tk = config.token,
+                    cpd = config.cpd ?: "",
                 ).postBundle(jsonString)
 
                 // Create and return the AssessmentResponse

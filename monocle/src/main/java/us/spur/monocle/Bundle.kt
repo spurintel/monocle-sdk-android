@@ -18,6 +18,7 @@ class BundlePoster(
     private val t: String,
     private val s: String,
     private val tk: String,
+    private val cpd: String,
     private val client: OkHttpClient = OkHttpClient()
 ) {
 
@@ -32,6 +33,7 @@ class BundlePoster(
                     .addQueryParameter("t", t)
                     .addQueryParameter("s", s)
                     .addQueryParameter("tk", tk)
+                    .addQueryParameter("cpd", cpd)
                     .build()
 
                 val requestBody = jsonBody.toRequestBody("text/plain;charset=UTF-8".toMediaType())
