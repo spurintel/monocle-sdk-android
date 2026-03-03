@@ -1,5 +1,6 @@
 package us.spur.monocle
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.*
@@ -8,7 +9,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 sealed class BundlePosterError : Exception() {
-    data class ServerError(val statusCode: Int) : BundlePosterError()
+    data class ServerError(val statusCode: Int, val body: String?) : BundlePosterError() {
+        override val message: String
+            get() = "Server error $statusCode: $body"
+    }
     object InvalidResponseData : BundlePosterError()
     data class NetworkFailure(val error: Throwable) : BundlePosterError()
 }
@@ -27,7 +31,7 @@ class BundlePoster(
             try {
                 val url = HttpUrl.Builder()
                     .scheme("https")
-                    .host("mcl.spur.us")
+                    .host("js.mcl.io")
                     .addPathSegments("r/bundle")
                     .addQueryParameter("v", v)
                     .addQueryParameter("t", t)
@@ -36,6 +40,9 @@ class BundlePoster(
                     .addQueryParameter("cpd", cpd)
                     .build()
 
+                Log.d("Monocle", "Posting bundle to: $url")
+                Log.d("Monocle", "Bundle body: $jsonBody")
+
                 val requestBody = jsonBody.toRequestBody("text/plain;charset=UTF-8".toMediaType())
                 val request = Request.Builder()
                     .url(url)
@@ -43,19 +50,27 @@ class BundlePoster(
                     .build()
 
                 val response = client.newCall(request).execute()
+                val statusCode = response.code
+                val responseBody = response.body?.string()
+                
+                Log.d("Monocle", "Response code: $statusCode")
+                Log.d("Monocle", "Response body: $responseBody")
 
                 if (response.isSuccessful) {
-                    response.body?.string()?.let { responseString ->
-                        response.close()
-                        Result.success(responseString)
-                    } ?: Result.failure(BundlePosterError.InvalidResponseData)
+                    if (responseBody != null) {
+                        Result.success(responseBody)
+                    } else {
+                        Result.failure(BundlePosterError.InvalidResponseData)
+                    }
                 } else {
-                    response.close()
-                    Result.failure(BundlePosterError.ServerError(response.code))
+                    Result.failure(BundlePosterError.ServerError(statusCode, responseBody))
                 }
             } catch (e: IOException) {
-                e.printStackTrace()
+                Log.e("Monocle", "Network failure during bundle post", e)
                 Result.failure(BundlePosterError.NetworkFailure(e))
+            } finally {
+                // response is already consumed by .string() and closed implicitly if we used use {}, 
+                // but here we extracted it manually. 
             }
         }
     }

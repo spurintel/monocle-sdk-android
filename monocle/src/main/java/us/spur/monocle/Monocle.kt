@@ -68,7 +68,7 @@ class Monocle private constructor(context: Context) {
                     return@withContext adInfo.id ?: UUID.randomUUID().toString()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("Monocle", "Error getting advertising ID", e)
             }
 
             // Fall back to a randomly generated UUID
@@ -108,9 +108,13 @@ class Monocle private constructor(context: Context) {
                 }
 
                 for (plugin in pluginsList) {
-                    val response = async { plugin.trigger() }.await()
-                    pluginsResponses.add(response)
-                    Log.d("Monocle", "response: $response")
+                    try {
+                        val response = async { plugin.trigger() }.await()
+                        pluginsResponses.add(response)
+                        Log.d("Monocle", "Plugin response: $response")
+                    } catch (e: Exception) {
+                        Log.e("Monocle", "Plugin execution failed", e)
+                    }
                 }
 
 
@@ -132,16 +136,23 @@ class Monocle private constructor(context: Context) {
                 // Create and return the AssessmentResponse
                 bundleResponse.fold(
                     onSuccess = { responseData ->
-                        // decode responseData into AssessmentResponse
-                        val assessmentResponse = Json.decodeFromString<AssessmentResponse>(responseData)
-                        Result.success(assessmentResponse)
+                        try {
+                            // decode responseData into AssessmentResponse
+                            val assessmentResponse = Json.decodeFromString<AssessmentResponse>(responseData)
+                            Result.success(assessmentResponse)
+                        } catch (e: Exception) {
+                            Log.e("Monocle", "Failed to decode assessment response: $responseData", e)
+                            Result.failure(e)
+                        }
                     },
                     onFailure = { error ->
+                        Log.e("Monocle", "Bundle posting failed", error)
                         Result.failure(error)
                     }
                 )
 
             } catch (e: Exception) {
+                Log.e("Monocle", "Assessment process encountered an error", e)
                 Result.failure(e)
             }
         }
