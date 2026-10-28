@@ -26,7 +26,9 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build AAR
-        run: ./gradlew :monocle:assembleRelease
+        env:
+          TAG: ${{ github.ref_name }}
+        run: ./gradlew :monocle:assembleRelease -PmonocleVersion="${TAG#v}"
 
       - name: Upload AAR as artifact
         uses: actions/upload-artifact@v4

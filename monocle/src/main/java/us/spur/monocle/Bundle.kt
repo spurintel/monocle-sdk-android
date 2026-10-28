@@ -40,37 +40,27 @@ class BundlePoster(
                     .addQueryParameter("cpd", cpd)
                     .build()
 
-                Log.d("Monocle", "Posting bundle to: $url")
-                Log.d("Monocle", "Bundle body: $jsonBody")
-
                 val requestBody = jsonBody.toRequestBody("text/plain;charset=UTF-8".toMediaType())
                 val request = Request.Builder()
                     .url(url)
                     .post(requestBody)
                     .build()
 
-                val response = client.newCall(request).execute()
-                val statusCode = response.code
-                val responseBody = response.body?.string()
-                
-                Log.d("Monocle", "Response code: $statusCode")
-                Log.d("Monocle", "Response body: $responseBody")
-
-                if (response.isSuccessful) {
-                    if (responseBody != null) {
-                        Result.success(responseBody)
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body.string()
+                    if (response.isSuccessful) {
+                        if (responseBody.isNotEmpty()) {
+                            Result.success(responseBody)
+                        } else {
+                            Result.failure(BundlePosterError.InvalidResponseData)
+                        }
                     } else {
-                        Result.failure(BundlePosterError.InvalidResponseData)
+                        Result.failure(BundlePosterError.ServerError(response.code, responseBody))
                     }
-                } else {
-                    Result.failure(BundlePosterError.ServerError(statusCode, responseBody))
                 }
             } catch (e: IOException) {
                 Log.e("Monocle", "Network failure during bundle post", e)
                 Result.failure(BundlePosterError.NetworkFailure(e))
-            } finally {
-                // response is already consumed by .string() and closed implicitly if we used use {}, 
-                // but here we extracted it manually. 
             }
         }
     }

@@ -29,7 +29,7 @@ class DnsResolverPlugin(
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw Exception("Failed to fetch regional domain")
-            response.body?.string()?.trim() ?: throw Exception("Empty regional domain")
+            response.body.string().trim().ifEmpty { throw Exception("Empty regional domain") }
         }
     }
 
@@ -82,7 +82,7 @@ class DnsResolverPlugin(
                         return@withContext ResolverPluginStub(ok = false, id = id, dns = "")
                     }
 
-                    val dns = response.body?.string().orEmpty()
+                    val dns = response.body.string()
                     if (dns.isEmpty()) {
                         ResolverPluginStub(ok = false, id = id, dns = "")
                     } else {
