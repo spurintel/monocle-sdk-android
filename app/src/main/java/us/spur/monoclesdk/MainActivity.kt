@@ -7,74 +7,54 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import us.spur.monocle.Monocle
 import us.spur.monocle.MonocleConfig
 
 class MainActivity : AppCompatActivity() {
 
+    // Location is optional: run the assessment whether or not the user grants it
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-
-        if (fineLocationGranted || coarseLocationGranted) {
-            setupMonocle()
-            CoroutineScope(Dispatchers.Main).launch {
-                runMonocleAssessment()
-            }
-        }
+    ) {
+        runMonocleAssessment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setupMonocle()
+
         if (hasLocationPermission()) {
-            setupMonocle()
-            CoroutineScope(Dispatchers.Main).launch {
-                runMonocleAssessment()
-            }
+            runMonocleAssessment()
         } else {
-            // Request the location permissions
             requestLocationPermissions()
         }
     }
 
-    // This method sets up us.spur.monocle.Monocle
+    // This method sets up us.spur.monocle.Monocle. In a real app, call this once from
+    // your Application class.
     private fun setupMonocle() {
-        val siteToken = getString(R.string.site_token)
+        val publishableKey = getString(R.string.publishable_key)
         // If you do not want all the plugins to run, you can specify the ones you want
 //        val config = MonocleConfig(
-//            token = siteToken,
+//            token = publishableKey,
 //            enabledPlugins = MonoclePluginOptions.DNS or MonoclePluginOptions.LOCATION,
 //        )
-        val config = MonocleConfig(token = siteToken)
-        Monocle.setup(config, this)
+        val config = MonocleConfig(token = publishableKey)
+        Monocle.setup(config, applicationContext)
     }
 
-    private suspend fun runMonocleAssessment() {
-        val monocle = Monocle.getInstance()
-        val assessmentResult = monocle.assess()
-        assessmentResult.fold(
-            onSuccess = { response ->
-                CoroutineScope(Dispatchers.IO).launch {
-                    withContext(Dispatchers.Main) {
-                        findViewById<TextView>(R.id.assessmentResultTextView).text = response.data
-                    }
-                }
-            },
-            onFailure = { error ->
-                runOnUiThread {
-                    // Assuming you have a TextView with the id `assessmentResultTextView`
-                    findViewById<TextView>(R.id.assessmentResultTextView).text = "Assessment failed: ${error.message}"
-                }
-            }
-        )
+    private fun runMonocleAssessment() {
+        lifecycleScope.launch {
+            val assessmentResult = Monocle.getInstance().assess()
+            findViewById<TextView>(R.id.assessmentResultTextView).text = assessmentResult.fold(
+                onSuccess = { response -> response.data },
+                onFailure = { error -> "Assessment failed: ${error.message}" }
+            )
+        }
     }
 
     private fun hasLocationPermission(): Boolean {

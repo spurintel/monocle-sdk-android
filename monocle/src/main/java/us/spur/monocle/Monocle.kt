@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -31,8 +32,9 @@ data class MonocleConfig(
 
 class Monocle private constructor(context: Context) {
 
-    private val contextRef = WeakReference(context)
-    private val v = "0.0.1"
+    private val contextRef = WeakReference(context.applicationContext)
+    private val client = OkHttpClient()
+    private val v = BuildConfig.SDK_VERSION
     private val t = "android"
 
     companion object {
@@ -67,7 +69,9 @@ class Monocle private constructor(context: Context) {
                 if (!adInfo.isLimitAdTrackingEnabled) {
                     return@withContext adInfo.id ?: UUID.randomUUID().toString()
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                // Throwable, not Exception: a missing play-services-ads-identifier
+                // dependency surfaces as NoClassDefFoundError
                 Log.e("Monocle", "Error getting advertising ID", e)
             }
 
@@ -88,14 +92,13 @@ class Monocle private constructor(context: Context) {
         val pluginsResponses = mutableListOf<MonoclePluginResponse>()
         return coroutineScope {
             try {
-                // Concurrently gather data from all plugins
                 val deviceID = getDeviceIdentifier()
                 val deviceInfoPlugin =
                     DeviceInfoPlugin(context, v, t, deviceID, config.token, MonoclePluginConfig("p/di", 1))
                 val locationPlugin =
                     LocationPlugin(context, v, t, deviceID, config.token, MonoclePluginConfig("p/li", 1))
                 val dnsPlugin =
-                    DnsResolverPlugin(OkHttpClient(), v, t, deviceID, config.token, MonoclePluginConfig("p/dr", 1))
+                    DnsResolverPlugin(client, v, t, deviceID, config.token, MonoclePluginConfig("p/dr", 1))
 
                 if (config.enabledPlugins and MonoclePluginOptions.DNS != 0) {
                     pluginsList.add(dnsPlugin)
@@ -107,15 +110,18 @@ class Monocle private constructor(context: Context) {
                     pluginsList.add(locationPlugin)
                 }
 
-                for (plugin in pluginsList) {
-                    try {
-                        val response = async { plugin.trigger() }.await()
-                        pluginsResponses.add(response)
-                        Log.d("Monocle", "Plugin response: $response")
-                    } catch (e: Exception) {
-                        Log.e("Monocle", "Plugin execution failed", e)
+                // Concurrently gather data from all plugins
+                val responses = pluginsList.map { plugin ->
+                    async {
+                        try {
+                            plugin.trigger()
+                        } catch (e: Exception) {
+                            Log.e("Monocle", "Plugin execution failed", e)
+                            null
+                        }
                     }
-                }
+                }.awaitAll()
+                pluginsResponses.addAll(responses.filterNotNull())
 
 
                 // Create BundlePostData with the plugin results
@@ -131,6 +137,7 @@ class Monocle private constructor(context: Context) {
                     s = deviceID,
                     tk = config.token,
                     cpd = config.cpd ?: "",
+                    client = client,
                 ).postBundle(jsonString)
 
                 // Create and return the AssessmentResponse
@@ -141,7 +148,7 @@ class Monocle private constructor(context: Context) {
                             val assessmentResponse = Json.decodeFromString<AssessmentResponse>(responseData)
                             Result.success(assessmentResponse)
                         } catch (e: Exception) {
-                            Log.e("Monocle", "Failed to decode assessment response: $responseData", e)
+                            Log.e("Monocle", "Failed to decode assessment response", e)
                             Result.failure(e)
                         }
                     },

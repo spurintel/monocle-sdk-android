@@ -1,5 +1,6 @@
 package us.spur.monocle
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
@@ -7,8 +8,6 @@ import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import android.os.Build
 import android.provider.Settings
-import android.util.DisplayMetrics
-import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -63,9 +62,7 @@ class DeviceInfoPlugin(
             val networkType = getNetworkType()
 
             val batteryManager = contextRef.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-            val windowManager = contextRef.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            val displayMetrics = contextRef.resources.displayMetrics
 
             val batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY).toFloat()
             val brightness =
@@ -93,6 +90,8 @@ class DeviceInfoPlugin(
         }
     }
 
+    // ACCESS_NETWORK_STATE is checked at runtime below; the host app decides whether to declare it
+    @SuppressLint("MissingPermission")
     private suspend fun getNetworkType(): String {
         return withContext(Dispatchers.IO) {
             val connectivityManager = contextRef.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

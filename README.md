@@ -1,101 +1,93 @@
 # monocle-sdk-android
 
 ## Prerequisites
-* AndroidStudio or other with Gradle and Kotlin support - Tested up to Android Studio Koala | 2024.1.1
-* Android - Emulated in Android Studio or physical device tested up to Android 15 beta.
+* Android Studio, or another IDE with Gradle and Kotlin support
+* Android 7.0 (API level 24) or later
 * Spur account - https://app.spur.us/start/create-account
-* Monocle Site Token - https://app.spur.us/monocle
+* Your Monocle app's **Publishable key**, from the app's **Settings** page under **API Keys** in the [Monocle Dashboard](https://app.spur.us/monocle)
 
-## Implementation
-1. In the target Android project, add a package dependency for Monocle.  See dependency resolution options below.
-2. import the `Monocle` package in a Kotlin source file
+## Installation
+
+The Monocle SDK isn't on Maven Central yet. Add it to your project as an Android Archive (`.aar`) file:
+
+1. Download `monocle.aar` from the latest release on the [Releases page](https://github.com/spurintel/monocle-sdk-android/releases).
+2. Create a `libs` folder in your app module (for example `app/libs`), if it doesn't have one, and copy `monocle.aar` into it.
+3. In the module's `build.gradle.kts`, add the archive and the libraries the SDK uses. An `.aar` added this way doesn't bring its dependencies with it, so all of these are needed:
+
+```kotlin
+dependencies {
+    implementation(files("libs/monocle.aar"))
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
+    implementation("com.google.android.gms:play-services-location:21.4.0")
+    implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
+    implementation("com.squareup.okhttp3:okhttp:5.4.0")
+    implementation("androidx.core:core-ktx:1.18.0")
+}
+```
+
+4. Sync the project with Gradle.
+
+## Permissions
+
+The SDK doesn't add any permissions to your app. Declare the ones you need in your app's `AndroidManifest.xml`:
+
+```xml
+<!-- Required -->
+<uses-permission android:name="android.permission.INTERNET" />
+
+<!-- Optional: lets the assessment report the network type -->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<!-- Optional: includes device location in the assessment -->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+```
+
+The SDK never asks the user for location permission. If your app has been granted it, the assessment includes the device's location; otherwise the assessment runs without it.
+
+## Usage
+
+1. Set up Monocle once, in your `Application` class, with your Publishable key:
+
 ```kotlin
 import us.spur.monocle.Monocle
 import us.spur.monocle.MonocleConfig
-```
-3. Get a Monocle **site-token** from the [Monocle management interface](https://app.spur.us/monocle)
-4. Enter your site token as the `token` parameter
-5. Instantiate Monocle 
-```kotlin
-val config = MonocleConfig(token = siteToken)
-Monocle.setup(config, this)
-```
-6. Call `assess` to run the assessment.
-```kotlin
-val monocle = Monocle.getInstance()
-val assessmentResult = monocle.assess()
-```
-7. Pass the resulting assessment to your [backend integration](https://docs.spur.us/monocle?id=backend-integration).
 
-### Automatic dependency resolution
-
-The Monocle SDK is not hosted in Maven Central yet, but that is the intent and priority.
-
-At this time you would need to copy the entire Monocle source module, or check out this repository and build it to generate the appropriate Monocle Android Archive (.aar) file for use in a separate project.  See [Monocle Android Example App](https://github.com/spurintel/monocle-example-android) for a complete example using a monocle.aar file.
-
-### Manual dependency inclusion
-
-#### Getting the AAR from GitHub
-
-To get the Monocle .aar file from GitHub, follow these steps:
-1. Go to the [Releases page](https://github.com/spurintel/monocle-sdk-android/releases) of the repository.
-2. Download the latest `monocle.aar` file from the assets section of the latest release.
-
-#### Including the AAR in Your Project
-To include the Monocle .aar file as a dependency in your Android project, you can follow these steps:
-1. Create a libs Directory:
-   If you don't have one already, create a directory named libs at the root level of your project.
-2. Place the .aar file:
-   Copy the Monocle .aar file into the libs directory you just created.
-3. Modify build.gradle(.kts) (Module Level):
-   Open the build.gradle(.kts) file of the module where you want to use the Monocle library.
-   Add the following lines within the android block:
-```gradle
-android {
-    // ... other configurations
-
-    repositories {
-        flatDir {
-            dirs("libs")
-            // dirs 'libs' // if not .kts
-        }
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Monocle.setup(MonocleConfig(token = "<MONOCLE PUBLISHABLE KEY>"), this)
     }
 }
 ```
-Add the dependency for the .aar file in the dependencies block:
-```gradle
-dependencies {
-    // ... other dependencies
 
-    implementation(files("libs/monocle.aar")) // Replace 'monocle.aar' with the actual file name
+2. Run an assessment from a coroutine when you need one, such as before sign-in or checkout:
+
+```kotlin
+lifecycleScope.launch {
+    Monocle.getInstance().assess()
+        .onSuccess { response ->
+            val encryptedAssessment = response.data
+            // Send encryptedAssessment to your backend
+        }
+        .onFailure { error ->
+            // Handle the error
+        }
 }
 ```
 
-Add the SDK dependencies:
-```gradle
-dependencies {
-    // ... other dependencies
+3. Send the encrypted assessment to your backend and decrypt it there. See the [Monocle documentation](https://docs.spur.us/monocle).
 
-    implementation (libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.play.services)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.play.services.location)
-    implementation(libs.okhttp)
-}
-```
+### Configuration options
 
-4. Sync Project:
-   After making these changes, click "Sync Now" in the bar that appears at the top of Android Studio to synchronize your project with the updated Gradle files.
-
-#### Explanation:
-The repositories block with flatDir tells Gradle to look for dependencies in the libs directory.
-The implementation line in the dependencies block includes the .aar file as a dependency, making its classes and resources available to your module.
-
-#### Important Notes:
-Replace monocle.aar with the actual name of your .aar file.
-If you encounter any issues, double-check that the .aar file is correctly placed in the libs directory and that the file path in the implementation line is accurate.
-If the Monocle library has any transitive dependencies (dependencies of its own), you might need to include those as well in your build.gradle file.
-By following these steps, you should be able to successfully include the Monocle .aar file as a dependency in your Android project and utilize its functionality
+| Option | Type | Description |
+| - | - | - |
+| `token` | `String` | Required. Your app's Publishable key. |
+| `cpd` | `String?` | Optional customer-provided data, returned in the assessment. |
+| `enabledPlugins` | `Int` | Which device signals to collect: `MonoclePluginOptions.DNS`, `DEVICE_INFO` and `LOCATION`, combined with `or`. Defaults to `MonoclePluginOptions.ALL`. |
 
 ## Example app
 
